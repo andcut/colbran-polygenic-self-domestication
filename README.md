@@ -38,6 +38,8 @@ That synthetic trait is then passed through the same downstream polygenic-select
   Runs IQ and EA4 through the same public AADR-intersection, PLINK-clumping, and sign-permutation workflow.
 - [`scripts/plot_figure6_comparison.py`](scripts/plot_figure6_comparison.py)
   Recreates a Figure 6-style panel with the GFP, schizophrenia, IQ, and EA4 results added to the Colbran non-European trait table.
+- [`scripts/plot_ancient_sample_coverage.py`](scripts/plot_ancient_sample_coverage.py)
+  Plots the dated ancient-sample coverage by region and millennium to show the temporal lens available to the ancient-DNA model.
 - [`polygenic_selection.py`](polygenic_selection.py)
   The sign-only admixture-aware test used by the public runner.
 - [`data/colbran_eur_polygenic_table3.tsv`](data/colbran_eur_polygenic_table3.tsv)
@@ -192,6 +194,19 @@ Main outputs:
 - `results/figure6_comparison_100k/figure6_comparison.tsv`
 
 ![Figure 6-style comparison](results/figure6_comparison_100k/figure6_comparison.png)
+
+## Plot ancient sample coverage
+
+```bash
+python3 scripts/plot_ancient_sample_coverage.py
+```
+
+Main outputs:
+
+- `results/sample_coverage/ancient_sample_coverage.png`
+- `results/sample_coverage/ancient_sample_coverage.tsv`
+
+![Ancient sample coverage by region and millennium](results/sample_coverage/ancient_sample_coverage.png)
 
 Current headline sign-only `joint_non_eur` results in the committed `100k` runs:
 
