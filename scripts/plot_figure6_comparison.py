@@ -28,8 +28,8 @@ DEFAULT_SUMMARIES = [
 OUR_LABELS = {
     "gfp": "GFP (self-domestication extension)",
     "schizophrenia": "Schizophrenia (self-domestication extension)",
-    "iq": "IQ (cognitive comparison)",
-    "ea4": "EA4 (cognitive comparison)",
+    "iq": "IQ (self-domestication extension)",
+    "ea4": "EA4 (self-domestication extension)",
 }
 
 
@@ -85,16 +85,14 @@ def load_our_rows(paths: list[Path], analysis: str) -> list[dict[str, object]]:
                 if trait not in OUR_LABELS:
                     continue
                 p_value = float(row["directional_p"])
-                color = "#0d6efd" if trait in {"gfp", "schizophrenia"} else "#198754"
-                marker = "D" if trait in {"gfp", "schizophrenia"} else "s"
                 rows.append(
                     {
                         "label": OUR_LABELS[trait],
                         "source": "Extension",
                         "p_value": p_value,
                         "x": figure6_transform(p_value),
-                        "color": color,
-                        "marker": marker,
+                        "color": "#0d6efd",
+                        "marker": "D",
                         "size": 66,
                     }
                 )
@@ -148,8 +146,7 @@ def save_plot(rows: list[dict[str, object]], output_dir: Path) -> None:
 
     legend_handles = [
         plt.Line2D([0], [0], marker="o", color="black", linestyle="", markersize=7, label="Colbran Figure 6 traits"),
-        plt.Line2D([0], [0], marker="D", markerfacecolor="#0d6efd", markeredgecolor="black", color="#0d6efd", linestyle="", markersize=7, label="Self-domestication traits"),
-        plt.Line2D([0], [0], marker="s", markerfacecolor="#198754", markeredgecolor="black", color="#198754", linestyle="", markersize=7, label="Cognitive comparison traits"),
+        plt.Line2D([0], [0], marker="D", markerfacecolor="#0d6efd", markeredgecolor="black", color="#0d6efd", linestyle="", markersize=7, label="Extension traits"),
     ]
     ax.legend(handles=legend_handles, loc="lower right", frameon=False)
 
