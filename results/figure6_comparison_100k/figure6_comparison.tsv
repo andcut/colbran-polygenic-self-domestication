@@ -1,0 +1,22 @@
+label	source	p_value	figure6_x
+Type 2 Diabetes	Colbran	1	-7.69897000
+Waist-hip Ratio	Colbran	1	-7.69897000
+Waist-hip Ratio (Female)	Colbran	1	-7.69897000
+Waist-hip Ratio (Male)	Colbran	0.971	-1.23657201
+Birthweight	Colbran	0.918	-0.78515615
+Skin Pigmentation	Colbran	0.807	-0.41341270
+Body Mass Index	Colbran	0.704	-0.22767829
+Triglycerides	Colbran	0.62	-0.11918641
+Ulcerative Colitis	Colbran	0.384	0.11463878
+Mean corpuscular hemoglobin	Colbran	0.331	0.17914201
+Inflammatory Bowel Disease	Colbran	0.238	0.32239305
+Alzheimer's Disease	Colbran	0.192	0.41566878
+Standing Height	Colbran	0.173	0.46092390
+Bone Mineral Density	Colbran	0.112	0.64975198
+SARS-CoV-2 (Hospitalized)	Colbran	0.027	1.26760624
+Asthma	Colbran	0.014	1.55284197
+White Blood Cell Counts	Colbran	0.01	1.69897000
+GFP (self-domestication extension)	Extension	0.0051399486	1.98801123
+Tanning	Colbran	0.002	2.39794001
+Rheumatoid Arthritis	Colbran	1.5e-05	4.52287875
+Schizophrenia (self-domestication extension)	Extension	9.9999e-06	4.69897435
