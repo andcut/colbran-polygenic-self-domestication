@@ -26,10 +26,10 @@ DEFAULT_SUMMARIES = [
 ]
 
 OUR_LABELS = {
-    "gfp": "GFP (self-domestication extension)",
-    "schizophrenia": "Schizophrenia (self-domestication extension)",
-    "iq": "IQ (self-domestication extension)",
-    "ea4": "EA4 (self-domestication extension)",
+    "gfp": "GFP",
+    "schizophrenia": "Schizophrenia",
+    "iq": "IQ",
+    "ea4": "EA4",
 }
 
 
