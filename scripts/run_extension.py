@@ -31,6 +31,7 @@ import subprocess
 import sys
 import urllib.request
 from collections import Counter, defaultdict
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -177,6 +178,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--polygenic-script", type=Path, default=POLYGENIC_SCRIPT)
     parser.add_argument("--n-permutations", type=int, default=100000)
     parser.add_argument("--block-size", type=int, default=250)
+    parser.add_argument("--jobs", type=int, default=8)
     parser.add_argument("--seed", type=int, default=1)
     return parser.parse_args()
 
@@ -1086,6 +1088,31 @@ def run_one_polygenic_test(
     subprocess.run(cmd, check=True)
 
 
+def run_and_collect_rows(
+    analysis: str,
+    output_dir: Path,
+    counts_paths: dict[str, Path],
+    admixture_paths: dict[str, Path],
+    traits: list[str],
+    script_path: Path,
+    n_permutations: int,
+    block_size: int,
+    seed: int,
+) -> tuple[str, list[dict[str, str]]]:
+    out_path = output_dir / f"polygenic_{analysis}.tsv"
+    run_one_polygenic_test(
+        script_path,
+        counts_paths[analysis],
+        admixture_paths[analysis],
+        out_path,
+        traits,
+        n_permutations,
+        block_size,
+        seed,
+    )
+    return analysis, load_rows(out_path, analysis)
+
+
 def load_rows(path: Path, analysis: str) -> list[dict[str, str]]:
     with path.open() as handle:
         reader = csv.DictReader(handle, delimiter="\t")
@@ -1113,12 +1140,46 @@ def run_sign_suite(
     n_permutations: int,
     block_size: int,
     seed: int,
+    jobs: int = 1,
 ) -> Path:
+    rows_by_analysis: dict[str, list[dict[str, str]]] = {}
+    if jobs <= 1:
+        for analysis in ALL_ANALYSES:
+            _, analysis_rows = run_and_collect_rows(
+                analysis,
+                output_dir,
+                counts_paths,
+                admixture_paths,
+                traits,
+                script_path,
+                n_permutations,
+                block_size,
+                seed,
+            )
+            rows_by_analysis[analysis] = analysis_rows
+    else:
+        with ThreadPoolExecutor(max_workers=min(jobs, len(ALL_ANALYSES))) as executor:
+            futures = [
+                executor.submit(
+                    run_and_collect_rows,
+                    analysis,
+                    output_dir,
+                    counts_paths,
+                    admixture_paths,
+                    traits,
+                    script_path,
+                    n_permutations,
+                    block_size,
+                    seed,
+                )
+                for analysis in ALL_ANALYSES
+            ]
+            for future in futures:
+                analysis, analysis_rows = future.result()
+                rows_by_analysis[analysis] = analysis_rows
     rows: list[dict[str, str]] = []
     for analysis in ALL_ANALYSES:
-        out_path = output_dir / f"polygenic_{analysis}.tsv"
-        run_one_polygenic_test(script_path, counts_paths[analysis], admixture_paths[analysis], out_path, traits, n_permutations, block_size, seed)
-        rows.extend(load_rows(out_path, analysis))
+        rows.extend(rows_by_analysis[analysis])
     summary_path = output_dir / "polygenic_summary.tsv"
     write_summary(summary_path, rows)
     return summary_path
@@ -1133,7 +1194,9 @@ def run_joint_sensitivity(
     n_permutations: int,
     block_size: int,
     seed: int,
+    jobs: int = 1,
 ) -> None:
+    del jobs
     out_path = output_dir / "polygenic_joint_non_eur_sensitivity.tsv"
     run_one_polygenic_test(
         script_path,
@@ -1297,6 +1360,7 @@ def main() -> int:
         args.n_permutations,
         args.block_size,
         args.seed,
+        args.jobs,
     )
     run_joint_sensitivity(
         args.output_dir,
@@ -1307,6 +1371,7 @@ def main() -> int:
         args.n_permutations,
         args.block_size,
         args.seed,
+        args.jobs,
     )
     write_gfp_notes(args.output_dir / "gfp_construction.md", gfp_diagnostics, clumped_matches)
     write_results_md(

@@ -1,0 +1,3 @@
+trait	source_mode	source_description
+iq	full_summary_statistics	Savage et al. 2018 intelligence GWAS (full summary statistics)
+ea4	lead_hits_fallback	Lee et al. 2018 educational attainment GWAS lead-SNP fallback; full SSGAC summary statistics are not wired into this workspace

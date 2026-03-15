@@ -14,4 +14,12 @@ results/extension_100k/polygenic_*.tsv
 !results/extension_100k/polygenic_summary.tsv
 !results/extension_100k/polygenic_joint_non_eur_sensitivity.tsv
 
+results/cognitive_comparison_100k/eur_reference*
+results/cognitive_comparison_100k/plink_clump*
+results/cognitive_comparison_100k/admixture_*.tsv
+results/cognitive_comparison_100k/counts_*.tsv.gz
+results/cognitive_comparison_100k/polygenic_*.tsv
+!results/cognitive_comparison_100k/polygenic_summary.tsv
+!results/cognitive_comparison_100k/polygenic_joint_non_eur_sensitivity.tsv
+
 results/figure6_comparison_100k/*.svg

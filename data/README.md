@@ -5,7 +5,7 @@ This repository commits only the small metadata files needed to define the compa
 - [`colbran_eur_polygenic_table3.tsv`](colbran_eur_polygenic_table3.tsv)
 - [`sample_info`](sample_info)
 
-The repository also commits the small result artifacts in `results/`, including the exact pre-clump and clumped lead-locus tables for `gfp` and `schizophrenia`.
+The repository also commits the small result artifacts in `results/`, including the exact pre-clump and clumped lead-locus tables for `gfp`, `schizophrenia`, `iq`, and `ea4`.
 Those committed result files are meant to make inspection and write-up easier.
 They are not substitutes for the raw AADR and schizophrenia inputs below.
 
@@ -23,6 +23,9 @@ data/
       10537126
     full_sumstats/
       PGC3_SCZ_wave3_european.tsv.gz
+      SavageJansen_IntMeta_sumstats.zip
+    gwas/
+      ea4_supp_tables.xlsx
     cache/
       bigfive_aadr/
 ```
@@ -171,7 +174,59 @@ Expected cache files after the first successful run:
 If you want to prepopulate them manually, you can run the same URLs yourself and then let the script reuse the cached files.
 Most users do not need to do that.
 
-## 4. PLINK
+## 4. IQ summary statistics
+
+Needed file:
+
+- `data/raw/full_sumstats/SavageJansen_IntMeta_sumstats.zip`
+
+Upstream source:
+
+- Savage et al. 2018 intelligence meta-analysis summary-statistics archive
+- The filename above is the one used in the parent workspace and retained here to make scripted reproduction unambiguous
+
+What to download:
+
+- the full zipped intelligence summary-statistics archive
+
+What the runner expects:
+
+- a zip file containing a single tab-separated data member with columns including `SNP`, `CHR`, `POS`, `A1`, `A2`, `Zscore`, and `P`
+
+Example shell recipe:
+
+```bash
+mkdir -p data/raw/full_sumstats
+
+mv ~/Downloads/SavageJansen_IntMeta_sumstats.zip \
+  data/raw/full_sumstats/SavageJansen_IntMeta_sumstats.zip
+```
+
+## 5. EA4 supplementary workbook
+
+Needed file:
+
+- `data/raw/gwas/ea4_supp_tables.xlsx`
+
+Upstream source:
+
+- Lee et al. 2018 educational attainment supplementary materials
+- The public runner uses worksheet `2. EduYears Lead SNPs` as a documented lead-hit fallback
+
+What to download:
+
+- the supplementary Excel workbook associated with the EA4 paper
+
+Example shell recipe:
+
+```bash
+mkdir -p data/raw/gwas
+
+mv ~/Downloads/ea4_supp_tables.xlsx \
+  data/raw/gwas/ea4_supp_tables.xlsx
+```
+
+## 6. PLINK
 
 The main runner uses PLINK clumping because Colbran et al. explicitly describe PLINK-based clumping in the polygenic methods.
 
@@ -185,7 +240,7 @@ Quick check:
 plink --help >/dev/null
 ```
 
-## 5. Minimal end-to-end recipe
+## 7. Minimal end-to-end recipe
 
 Once the AADR files and schizophrenia file are in place:
 
@@ -195,12 +250,18 @@ source .venv/bin/activate
 pip install -r requirements.txt
 
 python3 scripts/run_extension.py
+python3 scripts/run_cognitive_comparison.py
 python3 scripts/plot_figure6_comparison.py
 ```
+
+Both public runners default to `--jobs 8` for the sign-suite analyses.
 
 Main outputs:
 
 - `results/extension_100k/polygenic_summary.tsv`
 - `results/extension_100k/gfp_construction.md`
 - `results/extension_100k/RESULTS.md`
+- `results/cognitive_comparison_100k/polygenic_summary.tsv`
+- `results/cognitive_comparison_100k/RESULTS.md`
+- `results/cognitive_comparison_100k/weighted_summary.tsv`
 - `results/figure6_comparison_100k/figure6_comparison.png`

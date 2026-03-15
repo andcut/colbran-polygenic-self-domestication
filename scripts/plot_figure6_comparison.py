@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Plot a Figure 6-style comparison with the GFP and schizophrenia.
+"""Plot a Figure 6-style comparison with the public extension traits.
 
 This plot intentionally mirrors the sign-only non-European comparison in
 Colbran et al. Figure 6A. We therefore plot the empirical sign-permutation
-`joint_non_eur` p-values rather than any of the weighted exploratory analyses
-from the parent research repository.
+`joint_non_eur` p-values for the public extension traits rather than any
+weighted or exploratory variants from the parent research repository.
 """
 
 from __future__ import annotations
@@ -19,19 +19,24 @@ import matplotlib.pyplot as plt
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_COLBRAN_TABLE = ROOT / "data" / "colbran_eur_polygenic_table3.tsv"
-DEFAULT_SUMMARY = ROOT / "results" / "extension_100k" / "polygenic_summary.tsv"
 DEFAULT_OUTPUT_DIR = ROOT / "results" / "figure6_comparison_100k"
+DEFAULT_SUMMARIES = [
+    ROOT / "results" / "extension_100k" / "polygenic_summary.tsv",
+    ROOT / "results" / "cognitive_comparison_100k" / "polygenic_summary.tsv",
+]
 
 OUR_LABELS = {
     "gfp": "GFP (self-domestication extension)",
     "schizophrenia": "Schizophrenia (self-domestication extension)",
+    "iq": "IQ (cognitive comparison)",
+    "ea4": "EA4 (cognitive comparison)",
 }
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Create the Figure 6-style panel for this repository.")
     parser.add_argument("--colbran-table", type=Path, default=DEFAULT_COLBRAN_TABLE)
-    parser.add_argument("--our-summary", type=Path, default=DEFAULT_SUMMARY)
+    parser.add_argument("--our-summary", dest="our_summaries", action="append", type=Path)
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
     parser.add_argument("--analysis", default="joint_non_eur")
     return parser.parse_args()
@@ -68,28 +73,31 @@ def load_colbran_rows(path: Path) -> list[dict[str, object]]:
     return rows
 
 
-def load_our_rows(path: Path, analysis: str) -> list[dict[str, object]]:
+def load_our_rows(paths: list[Path], analysis: str) -> list[dict[str, object]]:
     rows: list[dict[str, object]] = []
-    with path.open() as handle:
-        reader = csv.DictReader(handle, delimiter="\t")
-        for row in reader:
-            if row["analysis"] != analysis:
-                continue
-            trait = row["trait"]
-            if trait not in OUR_LABELS:
-                continue
-            p_value = float(row["directional_p"])
-            rows.append(
-                {
-                    "label": OUR_LABELS[trait],
-                    "source": "Extension",
-                    "p_value": p_value,
-                    "x": figure6_transform(p_value),
-                    "color": "#0d6efd",
-                    "marker": "D",
-                    "size": 66,
-                }
-            )
+    for path in paths:
+        with path.open() as handle:
+            reader = csv.DictReader(handle, delimiter="\t")
+            for row in reader:
+                if row["analysis"] != analysis:
+                    continue
+                trait = row["trait"]
+                if trait not in OUR_LABELS:
+                    continue
+                p_value = float(row["directional_p"])
+                color = "#0d6efd" if trait in {"gfp", "schizophrenia"} else "#198754"
+                marker = "D" if trait in {"gfp", "schizophrenia"} else "s"
+                rows.append(
+                    {
+                        "label": OUR_LABELS[trait],
+                        "source": "Extension",
+                        "p_value": p_value,
+                        "x": figure6_transform(p_value),
+                        "color": color,
+                        "marker": marker,
+                        "size": 66,
+                    }
+                )
     return rows
 
 
@@ -140,7 +148,8 @@ def save_plot(rows: list[dict[str, object]], output_dir: Path) -> None:
 
     legend_handles = [
         plt.Line2D([0], [0], marker="o", color="black", linestyle="", markersize=7, label="Colbran Figure 6 traits"),
-        plt.Line2D([0], [0], marker="D", markerfacecolor="#0d6efd", markeredgecolor="black", color="#0d6efd", linestyle="", markersize=7, label="Extension traits"),
+        plt.Line2D([0], [0], marker="D", markerfacecolor="#0d6efd", markeredgecolor="black", color="#0d6efd", linestyle="", markersize=7, label="Self-domestication traits"),
+        plt.Line2D([0], [0], marker="s", markerfacecolor="#198754", markeredgecolor="black", color="#198754", linestyle="", markersize=7, label="Cognitive comparison traits"),
     ]
     ax.legend(handles=legend_handles, loc="lower right", frameon=False)
 
@@ -168,7 +177,8 @@ def save_table(rows: list[dict[str, object]], output_dir: Path) -> None:
 
 def main() -> int:
     args = parse_args()
-    rows = load_colbran_rows(args.colbran_table) + load_our_rows(args.our_summary, args.analysis)
+    our_summaries = args.our_summaries or DEFAULT_SUMMARIES
+    rows = load_colbran_rows(args.colbran_table) + load_our_rows(our_summaries, args.analysis)
     if not rows:
         raise RuntimeError("No rows were loaded for the Figure 6-style plot.")
     save_plot(rows, args.output_dir)
