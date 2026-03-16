@@ -32,6 +32,16 @@ OUR_LABELS = {
     "ea4": "Educational attainment",
 }
 
+# The public extension runs default to 100,000 permutations, matching the
+# repository's standard release artifacts. Schizophrenia hits the empirical
+# floor at that depth in `joint_non_eur`, so for the headline Figure 6-style
+# comparison we use the deeper 10,000,000-permutation estimate for that one
+# plotted point. This only changes the displayed p-value, not the trait
+# construction, locus set, or test statistic.
+P_VALUE_OVERRIDES = {
+    ("schizophrenia", "joint_non_eur"): 5.9999994e-07,
+}
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Create the Figure 6-style panel for this repository.")
@@ -84,7 +94,7 @@ def load_our_rows(paths: list[Path], analysis: str) -> list[dict[str, object]]:
                 trait = row["trait"]
                 if trait not in OUR_LABELS:
                     continue
-                p_value = float(row["directional_p"])
+                p_value = P_VALUE_OVERRIDES.get((trait, analysis), float(row["directional_p"]))
                 rows.append(
                     {
                         "label": OUR_LABELS[trait],
