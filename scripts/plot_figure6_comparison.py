@@ -148,7 +148,7 @@ def save_plot(rows: list[dict[str, object]], output_dir: Path) -> None:
         plt.Line2D([0], [0], marker="o", color="black", linestyle="", markersize=7, label="Colbran traits"),
         plt.Line2D([0], [0], marker="D", markerfacecolor="#0d6efd", markeredgecolor="black", color="#0d6efd", linestyle="", markersize=7, label="Self-domestication traits"),
     ]
-    ax.legend(handles=legend_handles, loc="lower right", frameon=False)
+    ax.legend(handles=legend_handles, loc="upper right", frameon=False)
 
     fig.tight_layout()
     fig.savefig(output_dir / "figure6_comparison.png", dpi=220, bbox_inches="tight")
