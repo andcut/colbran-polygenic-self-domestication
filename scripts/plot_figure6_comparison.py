@@ -29,7 +29,7 @@ OUR_LABELS = {
     "gfp": "GFP",
     "schizophrenia": "Schizophrenia",
     "iq": "IQ",
-    "ea4": "EA4",
+    "ea4": "Educational attainment",
 }
 
 
@@ -135,9 +135,9 @@ def save_plot(rows: list[dict[str, object]], output_dir: Path) -> None:
     ax.set_yticklabels([row["label"] for row in rows], fontsize=10)
     ax.set_xticks(ticks)
     ax.set_xticklabels(tick_labels, fontsize=10)
-    ax.set_xlabel("Empirical P-value (Figure 6 transform)", fontsize=11)
-    ax.set_title("Figure 6-style non-European polygenic selection panel", fontsize=13)
-    ax.set_xlim(min(ticks) - 0.2, max(ticks) + 0.2)
+    ax.set_xlabel("Empirical p-value", fontsize=11)
+    ax.set_title("Several self-domestication traits show evidence for polygenic selection", fontsize=13)
+    ax.set_xlim(max(ticks) + 0.2, min(ticks) - 0.2)
     ax.set_ylim(-0.8, len(rows) - 0.2)
     ax.grid(axis="x", color="0.92", linewidth=0.8)
     ax.set_axisbelow(True)
@@ -145,8 +145,8 @@ def save_plot(rows: list[dict[str, object]], output_dir: Path) -> None:
         ax.spines[spine].set_visible(False)
 
     legend_handles = [
-        plt.Line2D([0], [0], marker="o", color="black", linestyle="", markersize=7, label="Colbran Figure 6 traits"),
-        plt.Line2D([0], [0], marker="D", markerfacecolor="#0d6efd", markeredgecolor="black", color="#0d6efd", linestyle="", markersize=7, label="Extension traits"),
+        plt.Line2D([0], [0], marker="o", color="black", linestyle="", markersize=7, label="Colbran traits"),
+        plt.Line2D([0], [0], marker="D", markerfacecolor="#0d6efd", markeredgecolor="black", color="#0d6efd", linestyle="", markersize=7, label="Self-domestication traits"),
     ]
     ax.legend(handles=legend_handles, loc="lower right", frameon=False)
 
