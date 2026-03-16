@@ -28,6 +28,7 @@ The public runner deliberately follows the polygenic-selection methods in Colbra
 The only substantive extension is the trait itself for GFP.
 Because there is no standard public item-level GFP GWAS, this repository constructs a GWAS-like GFP summary statistic from public Big Five GWAS, reversing neuroticism and combining the five traits with literature-weighted loadings.
 That synthetic trait is then passed through the same downstream polygenic-selection pipeline as schizophrenia, IQ, and EA4.
+The main defense of this construction is that the final GFP-significant loci are not just one-trait artifacts: among the `163` genome-wide-significant GFP variants on the shared Big Five SNP set, `133` are directionally concordant across all `5/5` Big Five traits and the remaining `30` are concordant across `4/5`.
 
 ## Repository layout
 
