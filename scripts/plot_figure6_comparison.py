@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-"""Plot a Figure 6-style comparison with the public extension traits.
+"""Plot a Figure 6-style comparison with the extension traits.
 
 This plot intentionally mirrors the sign-only non-European comparison in
 Colbran et al. Figure 6A. We therefore plot the empirical sign-permutation
-`joint_non_eur` p-values for the public extension traits rather than any
-weighted or exploratory variants from the parent research repository.
+`joint_non_eur` p-values for GFP, schizophrenia, IQ, and EA4.
 """
 
 from __future__ import annotations
@@ -24,22 +23,13 @@ DEFAULT_SUMMARIES = [
     ROOT / "results" / "extension_100k" / "polygenic_summary.tsv",
     ROOT / "results" / "cognitive_comparison_100k" / "polygenic_summary.tsv",
 ]
+DEFAULT_DEEP_SCHIZ_P_VALUES = ROOT / "results" / "deep_schizophrenia_10m" / "deep_schizophrenia_p_value.tsv"
 
 OUR_LABELS = {
     "gfp": "GFP",
     "schizophrenia": "Schizophrenia",
     "iq": "IQ",
     "ea4": "Educational attainment",
-}
-
-# The public extension runs default to 100,000 permutations, matching the
-# repository's standard release artifacts. Schizophrenia hits the empirical
-# floor at that depth in `joint_non_eur`, so for the headline Figure 6-style
-# comparison we use the deeper 10,000,000-permutation estimate for that one
-# plotted point. This only changes the displayed p-value, not the trait
-# construction, locus set, or test statistic.
-P_VALUE_OVERRIDES = {
-    ("schizophrenia", "joint_non_eur"): 5.9999994e-07,
 }
 
 
@@ -49,6 +39,31 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--our-summary", dest="our_summaries", action="append", type=Path)
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
     parser.add_argument("--analysis", default="joint_non_eur")
+    parser.add_argument(
+        "--deep-schiz-p-values",
+        type=Path,
+        default=DEFAULT_DEEP_SCHIZ_P_VALUES,
+        help=(
+            "Optional p-value table produced by scripts/run_deep_schizophrenia.py. "
+            "When present, it supplies the 10,000,000-permutation schizophrenia "
+            "joint_non_eur value used in the headline plot."
+        ),
+    )
+    parser.add_argument(
+        "--fast",
+        action="store_true",
+        help="Use the standard 100,000-permutation summaries only.",
+    )
+    parser.add_argument(
+        "--require-deep-schiz",
+        action="store_true",
+        help="Fail if the deep schizophrenia p-value table is missing.",
+    )
+    parser.add_argument(
+        "--allow-missing-deep-schiz",
+        action="store_true",
+        help="If the deep schizophrenia p-value table is missing, fall back to the standard 100,000-permutation value.",
+    )
     return parser.parse_args()
 
 
@@ -59,6 +74,13 @@ def figure6_transform(p_value: float) -> float:
     if p > 0.5:
         return math.log10(1.0 - p) - math.log10(0.5)
     return 0.0
+
+
+def display_path(path: Path) -> str:
+    try:
+        return path.resolve().relative_to(ROOT).as_posix()
+    except ValueError:
+        return path.as_posix()
 
 
 def load_colbran_rows(path: Path) -> list[dict[str, object]]:
@@ -75,6 +97,8 @@ def load_colbran_rows(path: Path) -> list[dict[str, object]]:
                     "source": "Colbran",
                     "p_value": p_value,
                     "x": figure6_transform(p_value),
+                    "p_value_source": "Colbran Table 3 transcription",
+                    "n_permutations": "NA",
                     "color": "black",
                     "marker": "o",
                     "size": 50,
@@ -83,7 +107,27 @@ def load_colbran_rows(path: Path) -> list[dict[str, object]]:
     return rows
 
 
-def load_our_rows(paths: list[Path], analysis: str) -> list[dict[str, object]]:
+def load_deep_p_values(path: Path | None, require: bool) -> dict[tuple[str, str], dict[str, str]]:
+    if path is None or not path.exists():
+        if require:
+            raise FileNotFoundError(f"Missing deep schizophrenia p-value table: {path}")
+        return {}
+
+    values: dict[tuple[str, str], dict[str, str]] = {}
+    with path.open() as handle:
+        reader = csv.DictReader(handle, delimiter="\t")
+        required = {"analysis", "trait", "directional_p"}
+        missing = required.difference(reader.fieldnames or [])
+        if missing:
+            raise ValueError(f"Missing columns in {path}: {sorted(missing)}")
+        for row in reader:
+            analysis = row["analysis"].strip()
+            trait = row["trait"].strip()
+            values[(trait, analysis)] = row
+    return values
+
+
+def load_our_rows(paths: list[Path], analysis: str, deep_p_values: dict[tuple[str, str], dict[str, str]]) -> list[dict[str, object]]:
     rows: list[dict[str, object]] = []
     for path in paths:
         with path.open() as handle:
@@ -94,13 +138,23 @@ def load_our_rows(paths: list[Path], analysis: str) -> list[dict[str, object]]:
                 trait = row["trait"]
                 if trait not in OUR_LABELS:
                     continue
-                p_value = P_VALUE_OVERRIDES.get((trait, analysis), float(row["directional_p"]))
+                deep_row = deep_p_values.get((trait, analysis))
+                if deep_row is None:
+                    p_value = float(row["directional_p"])
+                    p_value_source = display_path(path)
+                    n_permutations = "100000"
+                else:
+                    p_value = float(deep_row["directional_p"])
+                    p_value_source = deep_row.get("source") or deep_row.get("source_path") or display_path(path)
+                    n_permutations = deep_row.get("n_permutations", "")
                 rows.append(
                     {
                         "label": OUR_LABELS[trait],
                         "source": "Extension",
                         "p_value": p_value,
                         "x": figure6_transform(p_value),
+                        "p_value_source": p_value_source,
+                        "n_permutations": n_permutations,
                         "color": "#0d6efd",
                         "marker": "D",
                         "size": 66,
@@ -169,7 +223,12 @@ def save_plot(rows: list[dict[str, object]], output_dir: Path) -> None:
 def save_table(rows: list[dict[str, object]], output_dir: Path) -> None:
     path = output_dir / "figure6_comparison.tsv"
     with path.open("w", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=["label", "source", "p_value", "figure6_x"], delimiter="\t")
+        writer = csv.DictWriter(
+            handle,
+            fieldnames=["label", "source", "p_value", "figure6_x", "p_value_source", "n_permutations"],
+            delimiter="\t",
+            lineterminator="\n",
+        )
         writer.writeheader()
         for row in sorted(rows, key=lambda row: (row["x"], row["label"])):
             writer.writerow(
@@ -178,6 +237,8 @@ def save_table(rows: list[dict[str, object]], output_dir: Path) -> None:
                     "source": row["source"],
                     "p_value": f"{row['p_value']:.8g}",
                     "figure6_x": f"{row['x']:.8f}",
+                    "p_value_source": row["p_value_source"],
+                    "n_permutations": row["n_permutations"],
                 }
             )
 
@@ -185,7 +246,10 @@ def save_table(rows: list[dict[str, object]], output_dir: Path) -> None:
 def main() -> int:
     args = parse_args()
     our_summaries = args.our_summaries or DEFAULT_SUMMARIES
-    rows = load_colbran_rows(args.colbran_table) + load_our_rows(our_summaries, args.analysis)
+    deep_path = None if args.fast else args.deep_schiz_p_values
+    require_deep = not args.fast and not args.allow_missing_deep_schiz
+    deep_p_values = load_deep_p_values(deep_path, require=require_deep or args.require_deep_schiz)
+    rows = load_colbran_rows(args.colbran_table) + load_our_rows(our_summaries, args.analysis, deep_p_values)
     if not rows:
         raise RuntimeError("No rows were loaded for the Figure 6-style plot.")
     save_plot(rows, args.output_dir)

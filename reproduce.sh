@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-python3 scripts/run_extension.py
-python3 scripts/run_cognitive_comparison.py
-python3 scripts/plot_figure6_comparison.py
+if [[ -z "${PYTHON:-}" ]]; then
+  if [[ -x ".venv/bin/python" ]]; then
+    PYTHON=".venv/bin/python"
+  else
+    PYTHON="python3"
+  fi
+fi
+
+"$PYTHON" scripts/build_figure6_comparison.py "$@"

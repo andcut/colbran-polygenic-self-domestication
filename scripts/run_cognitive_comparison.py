@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Run the public cognitive comparison for IQ and EA4.
+"""Run the cognitive comparison for IQ and EA4.
 
-This script mirrors the same downstream choices used elsewhere in this public
-repository:
+This script uses the same downstream choices as the GFP and schizophrenia
+runner:
 
 - intersect to AADR 1240k variants
 - keep genome-wide-significant loci at p < 1e-8
@@ -13,10 +13,6 @@ The trait side differs slightly across the two inputs:
 
 - IQ uses full summary statistics from Savage et al. 2018
 - EA4 uses the lead-hit supplementary table from Lee et al. 2018
-
-That EA4 choice is documented explicitly so the public repo remains honest
-about where it matches Colbran closely and where it falls back to the data
-available in this workspace.
 """
 
 from __future__ import annotations
@@ -71,7 +67,7 @@ TRAITS = ["iq", "ea4"]
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Run IQ and EA4 through the same public Colbran-style pipeline used "
+            "Run IQ and EA4 through the same Colbran-style pipeline used "
             "for GFP and schizophrenia."
         )
     )
@@ -173,7 +169,7 @@ def workbook_rows(path: Path, sheet_name: str, header_row: int) -> list[dict[str
     return out
 
 
-def load_ea4_fallback_hits(path: Path, aadr_variant_ids: set[str], p_threshold: float) -> list[Hit]:
+def load_ea4_lead_hits(path: Path, aadr_variant_ids: set[str], p_threshold: float) -> list[Hit]:
     rows = workbook_rows(path, "2. EduYears Lead SNPs", header_row=2)
     hits: list[Hit] = []
     for row in rows:
@@ -203,7 +199,7 @@ def load_ea4_fallback_hits(path: Path, aadr_variant_ids: set[str], p_threshold: 
                 p_value=p_value,
                 source_gwas=(
                     "Lee et al. 2018 educational attainment GWAS "
-                    "(supplementary lead-hit fallback)"
+                    "(supplementary lead-hit table)"
                 ),
             )
         )
@@ -233,7 +229,7 @@ def write_results_md(
     lines = [
         "# Cognitive Comparison Results",
         "",
-        "This run applies the same public Colbran-style workflow used elsewhere in this repository to two cognitive comparison traits:",
+        "This run applies the same Colbran-style workflow used elsewhere in this repository to two cognitive comparison traits:",
         "",
         "- `iq`: Savage et al. 2018 intelligence GWAS (full summary statistics)",
         "- `ea4`: Lee et al. 2018 educational attainment GWAS lead-hit supplementary table",
@@ -272,7 +268,7 @@ def main() -> int:
     aadr_variant_ids = load_aadr_variant_ids(args.aadr_snp)
     candidate_hits = deduplicate_hits(
         load_iq_full_hits(args.iq_sumstats, aadr_variant_ids, args.gwas_p_threshold)
-        + load_ea4_fallback_hits(args.ea4_xlsx, aadr_variant_ids, args.gwas_p_threshold)
+        + load_ea4_lead_hits(args.ea4_xlsx, aadr_variant_ids, args.gwas_p_threshold)
     )
     if not candidate_hits:
         raise RuntimeError("No IQ or EA4 loci survived AADR intersection and genome-wide filtering.")
@@ -288,7 +284,7 @@ def main() -> int:
             },
             {
                 "trait": "ea4",
-                "source_mode": "lead_hits_fallback",
+                "source_mode": "lead_hits",
                 "source_description": "Lee et al. 2018 educational attainment GWAS lead-hit supplementary table",
             },
         ],

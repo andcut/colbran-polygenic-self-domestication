@@ -1,0 +1,2 @@
+analysis	trait	directional_p	n_permutations	seed	block_size	input_counts	input_admixture	source
+joint_non_eur	schizophrenia	5.9999994e-07	10000000	1	250	results/extension_100k/counts_joint_non_eur.tsv.gz	results/extension_100k/admixture_joint_non_eur.tsv	results/deep_schizophrenia_10m/deep_schizophrenia_p_value.tsv

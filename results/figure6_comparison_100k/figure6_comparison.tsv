@@ -1,24 +1,24 @@
-label	source	p_value	figure6_x
-Type 2 Diabetes	Colbran	1	-7.69897000
-Waist-hip Ratio	Colbran	1	-7.69897000
-Waist-hip Ratio (Female)	Colbran	1	-7.69897000
-Waist-hip Ratio (Male)	Colbran	0.971	-1.23657201
-Birthweight	Colbran	0.918	-0.78515615
-Skin Pigmentation	Colbran	0.807	-0.41341270
-Body Mass Index	Colbran	0.704	-0.22767829
-Triglycerides	Colbran	0.62	-0.11918641
-Ulcerative Colitis	Colbran	0.384	0.11463878
-Mean corpuscular hemoglobin	Colbran	0.331	0.17914201
-Inflammatory Bowel Disease	Colbran	0.238	0.32239305
-Alzheimer's Disease	Colbran	0.192	0.41566878
-Standing Height	Colbran	0.173	0.46092390
-Bone Mineral Density	Colbran	0.112	0.64975198
-IQ	Extension	0.032399676	1.18842934
-SARS-CoV-2 (Hospitalized)	Colbran	0.027	1.26760624
-Asthma	Colbran	0.014	1.55284197
-Educational attainment	Extension	0.010149899	1.69250828
-White Blood Cell Counts	Colbran	0.01	1.69897000
-GFP	Extension	0.0051399486	1.98801123
-Tanning	Colbran	0.002	2.39794001
-Rheumatoid Arthritis	Colbran	1.5e-05	4.52287875
-Schizophrenia	Extension	5.9999994e-07	5.92081880
+label	source	p_value	figure6_x	p_value_source	n_permutations
+Type 2 Diabetes	Colbran	1	-7.69897000	Colbran Table 3 transcription	NA
+Waist-hip Ratio	Colbran	1	-7.69897000	Colbran Table 3 transcription	NA
+Waist-hip Ratio (Female)	Colbran	1	-7.69897000	Colbran Table 3 transcription	NA
+Waist-hip Ratio (Male)	Colbran	0.971	-1.23657201	Colbran Table 3 transcription	NA
+Birthweight	Colbran	0.918	-0.78515615	Colbran Table 3 transcription	NA
+Skin Pigmentation	Colbran	0.807	-0.41341270	Colbran Table 3 transcription	NA
+Body Mass Index	Colbran	0.704	-0.22767829	Colbran Table 3 transcription	NA
+Triglycerides	Colbran	0.62	-0.11918641	Colbran Table 3 transcription	NA
+Ulcerative Colitis	Colbran	0.384	0.11463878	Colbran Table 3 transcription	NA
+Mean corpuscular hemoglobin	Colbran	0.331	0.17914201	Colbran Table 3 transcription	NA
+Inflammatory Bowel Disease	Colbran	0.238	0.32239305	Colbran Table 3 transcription	NA
+Alzheimer's Disease	Colbran	0.192	0.41566878	Colbran Table 3 transcription	NA
+Standing Height	Colbran	0.173	0.46092390	Colbran Table 3 transcription	NA
+Bone Mineral Density	Colbran	0.112	0.64975198	Colbran Table 3 transcription	NA
+IQ	Extension	0.032399676	1.18842934	results/cognitive_comparison_100k/polygenic_summary.tsv	100000
+SARS-CoV-2 (Hospitalized)	Colbran	0.027	1.26760624	Colbran Table 3 transcription	NA
+Asthma	Colbran	0.014	1.55284197	Colbran Table 3 transcription	NA
+Educational attainment	Extension	0.010149899	1.69250828	results/cognitive_comparison_100k/polygenic_summary.tsv	100000
+White Blood Cell Counts	Colbran	0.01	1.69897000	Colbran Table 3 transcription	NA
+GFP	Extension	0.0051399486	1.98801123	results/extension_100k/polygenic_summary.tsv	100000
+Tanning	Colbran	0.002	2.39794001	Colbran Table 3 transcription	NA
+Rheumatoid Arthritis	Colbran	1.5e-05	4.52287875	Colbran Table 3 transcription	NA
+Schizophrenia	Extension	5.9999994e-07	5.92081880	results/deep_schizophrenia_10m/deep_schizophrenia_p_value.tsv	10000000

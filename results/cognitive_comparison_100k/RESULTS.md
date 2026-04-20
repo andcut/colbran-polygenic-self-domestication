@@ -1,6 +1,6 @@
 # Cognitive Comparison Results
 
-This run applies the same public Colbran-style workflow used elsewhere in this repository to two cognitive comparison traits:
+This run applies the same Colbran-style workflow used elsewhere in this repository to two cognitive comparison traits:
 
 - `iq`: Savage et al. 2018 intelligence GWAS (full summary statistics)
 - `ea4`: Lee et al. 2018 educational attainment GWAS lead-hit supplementary table

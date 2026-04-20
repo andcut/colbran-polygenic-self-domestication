@@ -25,7 +25,7 @@ Following Colbran et al.'s downstream polygenic-selection pipeline, only 1240k v
 - `4/5` concordant traits: `30`
 - `5/5` concordant traits: `133`
 
-This is the main practical defense of the public GFP construction.
+This is the main practical defense of the GFP construction.
 Although the standalone Big Five GWAS differ a lot in raw signal density, the final GFP-significant loci are mostly not one-trait artifacts: `133/163` are concordant across all `5/5` Big Five traits, and the remaining `30/163` are concordant across `4/5`.
 
 ## Standalone Big Five genome-wide-significant counts on the shared SNP set

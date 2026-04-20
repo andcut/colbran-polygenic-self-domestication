@@ -10,9 +10,8 @@ This file keeps the sign-only empirical test close to the paper:
 - empirical p-values come from random sign flips across loci, mirroring the
   paper's permutation logic for polygenic selection
 
-In the public repository, this script is used as-is by
-`scripts/run_extension.py`. The extension work happens in trait
-construction and data preparation, not by changing this core sign test.
+This script is used as-is by the trait runners. The extension work happens in
+trait construction and data preparation, not by changing this core sign test.
 """
 
 from __future__ import annotations

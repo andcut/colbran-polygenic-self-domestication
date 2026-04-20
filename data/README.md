@@ -5,7 +5,7 @@ This repository commits only the small metadata files needed to define the compa
 - [`colbran_eur_polygenic_table3.tsv`](colbran_eur_polygenic_table3.tsv)
 - [`sample_info`](sample_info)
 
-The repository also commits the small result artifacts in `results/`, including the exact pre-clump and clumped lead-locus tables for `gfp`, `schizophrenia`, `iq`, and `ea4`.
+The repository also commits the small result artifacts in `results/`, including the pre-clump and clumped lead-locus tables for `gfp`, `schizophrenia`, `iq`, and `ea4`.
 Those committed result files are meant to make inspection and write-up easier.
 They are not substitutes for the raw AADR and schizophrenia inputs below.
 
@@ -46,11 +46,11 @@ These correspond to the `.ind`, `.snp`, and `.geno` EIGENSTRAT files used throug
 Upstream source:
 
 - David Reich Lab, "Allen Ancient DNA Resource (AADR): Downloadable genotypes of present-day and ancient DNA data"
-- Search for the public downloadable-genotypes page if the exact URL changes on the Reich Lab site.
+- Search for the downloadable-genotypes page if the exact URL changes on the Reich Lab site.
 
 What to download:
 
-- the public `1240k` AADR release used by the Colbran-style workflow
+- the `1240k` AADR release used by the Colbran-style workflow
 - the three EIGENSTRAT files for the same release
 
 Important:
@@ -73,9 +73,9 @@ If your downloads have different names:
 ```bash
 mkdir -p data/raw/aadr
 
-ln -sf /absolute/path/to/AADR_public_1240k.ind  data/raw/aadr/10537414
-ln -sf /absolute/path/to/AADR_public_1240k.snp  data/raw/aadr/10537415
-ln -sf /absolute/path/to/AADR_public_1240k.geno data/raw/aadr/10537126
+ln -sf /absolute/path/to/AADR_1240k.ind  data/raw/aadr/10537414
+ln -sf /absolute/path/to/AADR_1240k.snp  data/raw/aadr/10537415
+ln -sf /absolute/path/to/AADR_1240k.geno data/raw/aadr/10537126
 ```
 
 ## 2. Schizophrenia summary statistics
@@ -87,7 +87,7 @@ Needed file:
 Upstream source:
 
 - Figshare dataset: [`scz2022`](https://figshare.com/articles/dataset/scz2022/19426775)
-- This is the public Psychiatric Genomics Consortium schizophrenia summary-stat release associated with Trubetskoy et al. 2022 / PGC3
+- This is the Psychiatric Genomics Consortium schizophrenia summary-stat release associated with Trubetskoy et al. 2022 / PGC3
 
 What to download:
 
@@ -183,7 +183,7 @@ Needed file:
 Upstream source:
 
 - Savage et al. 2018 intelligence meta-analysis summary-statistics archive
-- The filename above is the one used in the parent workspace and retained here to make scripted reproduction unambiguous
+- The filename above is the expected local name for this repository
 
 What to download:
 
@@ -211,7 +211,7 @@ Needed file:
 Upstream source:
 
 - Lee et al. 2018 educational attainment supplementary materials
-- The public runner uses worksheet `2. EduYears Lead SNPs` as a documented lead-hit fallback
+- The cognitive runner uses worksheet `2. EduYears Lead SNPs`
 
 What to download:
 
@@ -249,12 +249,13 @@ python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 
-python3 scripts/run_extension.py
-python3 scripts/run_cognitive_comparison.py
-python3 scripts/plot_figure6_comparison.py
+python3 scripts/build_figure6_comparison.py
 ```
 
-Both public runners default to `--jobs 8` for the sign-suite analyses.
+Use `python3 scripts/build_figure6_comparison.py --fast` for a quicker check that keeps all p-values at `100,000` permutations.
+The only visible plot difference is the schizophrenia `joint_non_eur` point.
+
+The runners default to `--jobs 8` for the sign-suite analyses.
 
 Main outputs:
 
@@ -264,4 +265,5 @@ Main outputs:
 - `results/cognitive_comparison_100k/polygenic_summary.tsv`
 - `results/cognitive_comparison_100k/RESULTS.md`
 - `results/cognitive_comparison_100k/weighted_summary.tsv`
+- `results/deep_schizophrenia_10m/deep_schizophrenia_p_value.tsv`
 - `results/figure6_comparison_100k/figure6_comparison.png`

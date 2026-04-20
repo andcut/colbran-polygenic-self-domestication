@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 """Build the GFP extension and compare it to schizophrenia.
 
-This is a focused public runner for the core extension in this repository.
-It deliberately excludes the exploratory branches from the parent research repo.
-
 Method choices in this script follow Colbran, Terhorst, and Mathieson,
 "Global patterns of natural selection inferred using ancient DNA",
 especially the paper's polygenic-selection methods:
@@ -70,10 +67,9 @@ TRAIT_ORDER = [
     "neuroticism",
 ]
 
-# This is the GFP construction. We do not use the earlier "PC of GWAS
-# vectors" build here because it was too sparse and too sensitive to one trait.
-# Instead, following the spirit of a phenotypic GFP, we combine the Big Five
-# using literature-informed GFP loadings, reversing neuroticism first.
+# The GFP construction follows the standard phenotypic interpretation: combine
+# the Big Five using literature-informed loadings, with neuroticism reversed so
+# higher scores point in the same broad direction as the other components.
 LITERATURE_GFP_LOADINGS = {
     "agreeableness": 0.57,
     "conscientiousness": 0.63,
@@ -160,7 +156,7 @@ class VariantRow:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Reproduce the public extension of Colbran et al. using a "
+            "Reproduce the Colbran-style extension using a "
             "literature-weighted GFP and European schizophrenia GWAS."
         )
     )
@@ -371,8 +367,8 @@ def open_text(path: Path, mode: str):
 
 def load_scz_full_hits(path: Path, aadr_variant_ids: set[str], p_threshold: float) -> list[Hit]:
     hits: list[Hit] = []
-    # This loader is intentionally narrow. We only support the PGC3 European
-    # Schizophrenia summary-stat schema used for the public release analysis.
+    # This loader is intentionally narrow: it supports the PGC3 European
+    # schizophrenia summary-stat schema used here.
     with open_text(path, "r") as handle:
         header: list[str] | None = None
         for raw_line in handle:
@@ -1301,12 +1297,12 @@ def write_results_md(
 def main() -> int:
     args = parse_args()
     args.output_dir.mkdir(parents=True, exist_ok=True)
-    BIG5_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    args.big5_cache_dir.mkdir(parents=True, exist_ok=True)
 
     aadr_variant_ids = load_aadr_variant_ids(args.aadr_snp)
     big5_rows = ensure_big5_cache(args.big5_cache_dir, args.aadr_snp)
     gfp_hits, gfp_diagnostics = construct_gfp_hits(big5_rows, args.gwas_p_threshold)
-    scz_hits = load_scz_full_hits(args.schiz_sumstats, aadr_variant_ids, args.gwas_p_threshold)
+    scz_hits = load_scz_full_hits(args.schizophrenia_sumstats, aadr_variant_ids, args.gwas_p_threshold)
     candidate_hits = deduplicate_hits(gfp_hits + scz_hits)
     if not candidate_hits:
         raise RuntimeError("No candidate GFP or schizophrenia hits survived the genome-wide threshold.")

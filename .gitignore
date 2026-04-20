@@ -23,3 +23,4 @@ results/cognitive_comparison_100k/polygenic_*.tsv
 !results/cognitive_comparison_100k/polygenic_joint_non_eur_sensitivity.tsv
 
 results/figure6_comparison_100k/*.svg
+results/deep_schizophrenia_10m/polygenic_joint_non_eur.tsv
