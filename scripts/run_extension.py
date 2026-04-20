@@ -6,7 +6,7 @@ Method choices in this script follow Colbran, Terhorst, and Mathieson,
 especially the paper's polygenic-selection methods:
 
 - filter to variants present on the 1240k panel
-- use PLINK clumping with a 200 kb window and r^2 > 0.4
+- use per-trait PLINK clumping with a 200 kb window and r^2 > 0.4
 - orient to the trait-increasing allele
 - run the sign-permutation test on non-European target panels
 
@@ -986,49 +986,56 @@ def run_plink_clump(
     clump_kb: int,
     clump_r2: float,
     plink_path: Path,
-) -> tuple[set[int], Path]:
-    assoc_path = output_prefix.with_suffix(".assoc.tsv")
-    write_assoc_for_clump(assoc_path, matches, plink_ids)
+) -> tuple[set[tuple[str, int]], list[Path]]:
+    selected: set[tuple[str, int]] = set()
+    clumped_paths: list[Path] = []
     id_to_snp_index = {plink_id: snp_index for snp_index, plink_id in plink_ids.items()}
-    subprocess.run(
-        [
-            str(plink_path),
-            "--bfile",
-            str(reference_prefix),
-            "--clump",
-            str(assoc_path),
-            "--clump-snp-field",
-            "SNP",
-            "--clump-field",
-            "P",
-            "--clump-p1",
-            "1",
-            "--clump-r2",
-            str(clump_r2),
-            "--clump-kb",
-            str(clump_kb),
-            "--allow-extra-chr",
-            "--out",
-            str(output_prefix),
-            "--silent",
-        ],
-        check=True,
-    )
-    clumped_path = output_prefix.with_suffix(".clumped")
-    selected: set[int] = set()
-    with clumped_path.open() as handle:
-        header = handle.readline().strip().split()
-        index_idx = header.index("SNP")
-        for line in handle:
-            if not line.strip():
-                continue
-            fields = line.split()
-            if len(fields) <= index_idx:
-                continue
-            plink_id = fields[index_idx]
-            if plink_id in id_to_snp_index:
-                selected.add(id_to_snp_index[plink_id])
-    return selected, clumped_path
+
+    for trait in sorted({match.hit.trait for match in matches}):
+        trait_matches = [match for match in matches if match.hit.trait == trait]
+        trait_slug = "".join(char if char.isalnum() or char in {"_", "-"} else "_" for char in trait)
+        trait_prefix = output_prefix.with_name(f"{output_prefix.name}_{trait_slug}")
+        assoc_path = trait_prefix.with_suffix(".assoc.tsv")
+        write_assoc_for_clump(assoc_path, trait_matches, plink_ids)
+        subprocess.run(
+            [
+                str(plink_path),
+                "--bfile",
+                str(reference_prefix),
+                "--clump",
+                str(assoc_path),
+                "--clump-snp-field",
+                "SNP",
+                "--clump-field",
+                "P",
+                "--clump-p1",
+                "1",
+                "--clump-r2",
+                str(clump_r2),
+                "--clump-kb",
+                str(clump_kb),
+                "--allow-extra-chr",
+                "--out",
+                str(trait_prefix),
+                "--silent",
+            ],
+            check=True,
+        )
+        clumped_path = trait_prefix.with_suffix(".clumped")
+        clumped_paths.append(clumped_path)
+        with clumped_path.open() as handle:
+            header = handle.readline().strip().split()
+            index_idx = header.index("SNP")
+            for line in handle:
+                if not line.strip():
+                    continue
+                fields = line.split()
+                if len(fields) <= index_idx:
+                    continue
+                plink_id = fields[index_idx]
+                if plink_id in id_to_snp_index:
+                    selected.add((trait, id_to_snp_index[plink_id]))
+    return selected, clumped_paths
 
 
 def load_eur_reference_indices(sample_info_path: Path, iid_to_index: dict[str, int], canonical_to_ids: dict[str, list[str]]) -> list[int]:
@@ -1327,7 +1334,7 @@ def main() -> int:
         eur_variants,
         args.plink_path,
     )
-    selected_snp_indices, clumped_path = run_plink_clump(
+    selected_snp_indices, clumped_paths = run_plink_clump(
         matched_preclump,
         ref_prefix,
         plink_ids,
@@ -1336,13 +1343,15 @@ def main() -> int:
         args.clump_r2,
         args.plink_path,
     )
-    clumped_matches = [match for match in matched_preclump if match.variant.snp_index in selected_snp_indices]
+    clumped_matches = [match for match in matched_preclump if (match.hit.trait, match.variant.snp_index) in selected_snp_indices]
     if not clumped_matches:
         raise RuntimeError("PLINK clumping removed every matched hit.")
 
     write_hits(args.output_dir / "lead_variants.tsv", [match.hit for match in clumped_matches])
     write_match_summary(args.output_dir / "lead_variant_match_summary.tsv", [match.hit for match in clumped_matches], clumped_matches, aadr_matches)
-    (args.output_dir / "plink_clump.note.txt").write_text(f"PLINK clump output: {clumped_path}\n")
+    (args.output_dir / "plink_clump.note.txt").write_text(
+        "PLINK clump outputs:\n" + "\n".join(str(path) for path in clumped_paths) + "\n"
+    )
 
     counts = aggregate_variant_counts(args.aadr_geno, len(sample_ids), union_indices, clumped_matches, groups_by_region)
     admixture_paths = write_admixture_files(args.output_dir, groups_by_region)

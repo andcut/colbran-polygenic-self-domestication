@@ -21,7 +21,7 @@ The runner follows the polygenic-selection methods in Colbran et al. as closely 
 
 - filter to variants present on the `1240k` panel
 - keep genome-wide-significant variants with `p < 1e-8`
-- clump with PLINK using a `200 kb` window and `r^2 > 0.4`
+- clump each trait with PLINK using a `200 kb` window and `r^2 > 0.4`
 - orient each locus to the trait-increasing allele
 - run the sign-permutation test on `AFR`, `EAS`, `SAS`, `SAM`, and `joint_non_eur`
 
@@ -242,7 +242,7 @@ The Figure 6-style plot uses `5.9999994e-07` for schizophrenia, from the deeper 
 The comments in [`scripts/run_extension.py`](scripts/run_extension.py) are written to explain each design choice in terms of the Colbran paper:
 
 - why we keep the `1240k` filter
-- why we use PLINK clumping with `200 kb` and `r^2 > 0.4`
+- why we use per-trait PLINK clumping with `200 kb` and `r^2 > 0.4`
 - why we prefer the `joint_non_eur` sign-only result for Figure 6-style comparison
 - why neuroticism is reversed in the GFP construction
 

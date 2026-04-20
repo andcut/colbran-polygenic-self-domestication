@@ -6,7 +6,7 @@ runner:
 
 - intersect to AADR 1240k variants
 - keep genome-wide-significant loci at p < 1e-8
-- clump on modern-European AADR samples with PLINK at 200 kb and r^2 > 0.4
+- clump each trait on modern-European AADR samples with PLINK at 200 kb and r^2 > 0.4
 - run Colbran-style sign permutations across AFR, EAS, SAS, SAM, and NonEur
 
 The trait side differs slightly across the two inputs:
@@ -319,7 +319,7 @@ def main() -> int:
         args.clump_r2,
         args.plink_path,
     )
-    clumped_matches = [match for match in matched_preclump if match.variant.snp_index in selected_indices]
+    clumped_matches = [match for match in matched_preclump if (match.hit.trait, match.variant.snp_index) in selected_indices]
     if not clumped_matches:
         raise RuntimeError("PLINK clumping removed every IQ and EA4 locus.")
     clumped_hits = [match.hit for match in clumped_matches]
