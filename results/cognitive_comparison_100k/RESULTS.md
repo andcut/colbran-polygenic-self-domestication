@@ -9,23 +9,17 @@ This run applies the same Colbran-style workflow used elsewhere in this reposito
 
 | Trait | Candidate 1240k hits pre-clump | Clumped lead loci |
 | --- | ---: | ---: |
-| `iq` | `1,401` | `304` |
+| `iq` | `1,401` | `295` |
 | `ea4` | `200` | `200` |
 
 ## Headline sign-only results
 
-- `iq joint_non_eur = 0.032399676`
-- `ea4 joint_non_eur = 0.010149899`
-- `iq joint_non_eur_sensitivity = 0.0075799242`
-- `ea4 joint_non_eur_sensitivity = 0.088069119`
-
-## Weighted comparison
-
-- `iq weighted joint_non_eur = 0.017859821`
-- `ea4 weighted joint_non_eur = 0.012089879`
+- `iq joint_non_eur = 0.025579744`
+- `ea4 joint_non_eur = 0.0058699413`
+- `iq joint_non_eur_sensitivity = 0.01704983`
+- `ea4 joint_non_eur_sensitivity = 0.0069199308`
 
 ## Output
 
-- Main sign summary: `polygenic_summary.tsv`
-- Main weighted summary: `weighted_summary.tsv`
+- Main summary: `polygenic_summary.tsv`
 - Figure 6-style overlay can be generated with `scripts/plot_figure6_comparison.py`.

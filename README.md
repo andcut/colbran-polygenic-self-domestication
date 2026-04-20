@@ -76,8 +76,6 @@ The repository commits the exact small files needed to inspect the result withou
   Exact pre-clump `1240k` candidate panels for `iq` and `ea4`.
 - [`results/cognitive_comparison_100k/lead_variants.tsv`](results/cognitive_comparison_100k/lead_variants.tsv)
   Exact post-clump lead-locus panels used in the cognitive comparison sign test.
-- [`results/cognitive_comparison_100k/weighted_summary.tsv`](results/cognitive_comparison_100k/weighted_summary.tsv)
-  Weighted comparison summary for `iq` and `ea4`.
 - [`results/cognitive_comparison_100k/trait_sources.tsv`](results/cognitive_comparison_100k/trait_sources.tsv)
   Compact record of the IQ and EA4 source inputs.
 - [`results/deep_schizophrenia_10m/deep_schizophrenia_p_value.tsv`](results/deep_schizophrenia_10m/deep_schizophrenia_p_value.tsv)
@@ -209,7 +207,6 @@ Main outputs:
 - `results/cognitive_comparison_100k/RESULTS.md`
 - `results/cognitive_comparison_100k/candidate_lead_variants.tsv`
 - `results/cognitive_comparison_100k/lead_variants.tsv`
-- `results/cognitive_comparison_100k/weighted_summary.tsv`
 - `results/figure6_comparison_100k/figure6_comparison.png`
 - `results/figure6_comparison_100k/figure6_comparison.tsv`
 
@@ -230,10 +227,10 @@ Main outputs:
 
 Current sign-only `joint_non_eur` results in the committed `100k` runs:
 
-- `gfp = 0.0051399486`
+- `gfp = 0.0029499705`
 - `schizophrenia = 9.9999e-06`
-- `iq = 0.032399676`
-- `ea4 = 0.010149899`
+- `iq = 0.025579744`
+- `ea4 = 0.0058699413`
 
 The Figure 6-style plot uses `5.9999994e-07` for schizophrenia, from the deeper `10,000,000`-permutation rerun of the same `joint_non_eur` count and admixture files.
 

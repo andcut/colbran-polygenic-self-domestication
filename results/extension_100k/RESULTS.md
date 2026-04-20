@@ -9,14 +9,14 @@ This run extends Colbran et al. with two traits often placed near the self-domes
 
 | Trait | Candidate 1240k hits pre-clump | Clumped lead loci |
 | --- | ---: | ---: |
-| `gfp` | `163` | `39` |
+| `gfp` | `163` | `41` |
 | `schizophrenia` | `2,553` | `523` |
 
 ## Headline sign-only results
 
-- `gfp joint_non_eur = 0.0051399486`
+- `gfp joint_non_eur = 0.0029499705`
 - `schizophrenia joint_non_eur = 9.9999e-06`
-- `gfp joint_non_eur_sensitivity = 0.0057399426`
+- `gfp joint_non_eur_sensitivity = 0.0029199708`
 - `schizophrenia joint_non_eur_sensitivity = 9.9999e-06`
 
 ## Output
